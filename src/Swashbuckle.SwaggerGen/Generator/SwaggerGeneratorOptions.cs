@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Swashbuckle.Swagger.Model;
 
@@ -33,7 +34,19 @@ namespace Swashbuckle.SwaggerGen.Generator
 
         public IList<IDocumentFilter> DocumentFilters { get; private set; }
 
-        public void SingleApiVersion(Info info)
+		internal Func<IEnumerable<ApiDescription>, string, ApiDescription> ResolveConflict { get; private set; } = ThrowExceptionOnApiDescriptionConflict;
+
+		private static ApiDescription ThrowExceptionOnApiDescriptionConflict(IEnumerable<ApiDescription> apiDescriptions, string httpMethod)
+		{
+			throw new NotSupportedException(string.Format(
+				"Multiple operations with path '{0}' and method '{1}'. Are you overloading action methods?",
+				apiDescriptions.First().RelativePathSansQueryString(), httpMethod));
+		}
+
+		public void ResolveConflictsBy(Func<IEnumerable<ApiDescription>, string, ApiDescription> resolver)
+			=> ResolveConflict = resolver ?? ThrowExceptionOnApiDescriptionConflict;
+
+public void SingleApiVersion(Info info)
         {
             ApiVersions.Clear();
             ApiVersions.Add(info);

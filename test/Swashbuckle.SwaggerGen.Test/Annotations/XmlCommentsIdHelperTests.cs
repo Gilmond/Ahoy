@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Reflection;
 using Xunit;
-using Swashbuckle.SwaggerGen.Annotations;
 using Swashbuckle.SwaggerGen.TestFixtures;
 
-namespace Swashbuckle.SwaggerGen.Test.Annotations
+namespace Swashbuckle.SwaggerGen.Annotations
 {
     public class XmlCommentsIdHelperTests
     {

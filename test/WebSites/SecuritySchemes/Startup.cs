@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.SwaggerGen.Generator;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
+using Swashbuckle.Swagger.Model;
 using SecuritySchemes.Swagger;
 
 namespace SecuritySchemes
@@ -20,7 +20,7 @@ namespace SecuritySchemes
         {
             services.AddMvc();
             // Uncomment the following line to add Web API services which makes it easier to port Web API 2 controllers.
-            // You will also need to add the Microsoft.AspNet.Mvc.WebApiCompatShim package to the 'dependencies' section of project.json.
+            // You will also need to add the Microsoft.AspNetCore.Mvc.WebApiCompatShim package to the 'dependencies' section of project.json.
             // services.AddWebApiConventions();
 
             services.AddSwaggerGen(c =>
@@ -44,12 +44,8 @@ namespace SecuritySchemes
         // Configure is called after ConfigureServices is called.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.MinimumLevel = LogLevel.Information;
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
-
-            // Add the platform handler to the request pipeline.
-            app.UseIISPlatformHandler();
 
             // Configure the HTTP request pipeline.
             app.UseStaticFiles();
@@ -59,7 +55,7 @@ namespace SecuritySchemes
             // Add the following route for porting Web API 2 controllers.
             // routes.MapWebApiRoute("DefaultApi", "api/{controller}/{id?}");
 
-            app.UseSwaggerGen();
+            app.UseSwagger();
             app.UseSwaggerUi();
 
             // TOOD: Figure out oauth middleware to validate token

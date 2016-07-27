@@ -1,26 +1,22 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using Newtonsoft.Json.Serialization;
-using Swashbuckle.SwaggerGen.Generator;
+using Swashbuckle.Swagger.Model;
 using Basic.Swagger;
+using Microsoft.Extensions.PlatformAbstractions;
+using System.IO;
 
 namespace Basic
 {
     public class Startup
     {
-        private readonly IApplicationEnvironment _appEnv;
         private readonly IHostingEnvironment _hostingEnv;
 
-        public Startup(IHostingEnvironment hostingEnv, IApplicationEnvironment appEnv)
+        public Startup(IHostingEnvironment hostingEnv)
         {
             _hostingEnv = hostingEnv;
-            _appEnv = appEnv;
         }
 
         // This method gets called by a runtime.
@@ -35,7 +31,7 @@ namespace Basic
                 });
 
             // Uncomment the following line to add Web API services which makes it easier to port Web API 2 controllers.
-            // You will also need to add the Microsoft.AspNet.Mvc.WebApiCompatShim package to the 'dependencies' section of project.json.
+            // You will also need to add the Microsoft.AspNetCore.Mvc.WebApiCompatShim package to the 'dependencies' section of project.json.
             // services.AddWebApiConventions();
 
             services.AddSwaggerGen(c =>
@@ -48,8 +44,6 @@ namespace Basic
                     TermsOfService = "Some terms ..."
                 });
 
-                c.DescribeAllEnumsAsStrings();
-
                 c.OperationFilter<AssignOperationVendorExtensions>();
             });
 
@@ -57,11 +51,7 @@ namespace Basic
             {
                 services.ConfigureSwaggerGen(c =>
                 {
-                    c.IncludeXmlComments(string.Format(@"{0}\artifacts\bin\Basic\{1}\{2}{3}\Basic.xml",
-                        GetSolutionBasePath(),
-                        _appEnv.Configuration,
-                        _appEnv.RuntimeFramework.Identifier,
-                        _appEnv.RuntimeFramework.Version.ToString().Replace(".", string.Empty)));
+                    c.IncludeXmlComments(GetXmlCommentsPath());
                 });
             }
         }
@@ -69,12 +59,8 @@ namespace Basic
         // Configure is called after ConfigureServices is called.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.MinimumLevel = LogLevel.Information;
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
-
-            // Add the platform handler to the request pipeline.
-            app.UseIISPlatformHandler();
 
             // Configure the HTTP request pipeline.
             app.UseStaticFiles();
@@ -85,21 +71,18 @@ namespace Basic
             // Add the following route for porting Web API 2 controllers.
             // routes.MapWebApiRoute("DefaultApi", "api/{controller}/{id?}");
 
-            app.UseSwaggerGen();
+            app.UseSwagger((httpRequest, swaggerDoc) =>
+            {
+                swaggerDoc.Host = httpRequest.Host.Value;
+            });
+
             app.UseSwaggerUi();
         }
 
-        private string GetSolutionBasePath()
+        private string GetXmlCommentsPath()
         {
-            var dir = Directory.CreateDirectory(_appEnv.ApplicationBasePath);
-            while (dir.Parent != null)
-            {
-                if (dir.GetFiles("global.json").Any())
-                    return dir.FullName;
-
-                dir = dir.Parent;
-            }
-            throw new InvalidOperationException("Failed to detect solution base path - global.json not found.");
+            var app = PlatformServices.Default.Application;
+            return Path.Combine(app.ApplicationBasePath, Path.ChangeExtension(app.ApplicationName, "xml"));
         }
     }
 }

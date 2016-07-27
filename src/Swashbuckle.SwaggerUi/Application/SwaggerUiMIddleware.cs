@@ -3,13 +3,11 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text;
-using System.Linq;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.Routing.Template;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Template;
 
-namespace Swashbuckle.Application
+namespace Swashbuckle.SwaggerUi.Application
 {
     public class SwaggerUiMiddleware
     {
@@ -38,7 +36,7 @@ namespace Swashbuckle.Application
                 return;
             }
 
-            var template = _resourceAssembly.GetManifestResourceStream("Swashbuckle.SwaggerUi.SwaggerUi.index.html");
+            var template = _resourceAssembly.GetManifestResourceStream("Swashbuckle.SwaggerUi.CustomAssets.index.html");
             var content = AssignPlaceholderValuesTo(template);
             RespondWithContentHtml(httpContext.Response, content);
         }
@@ -47,8 +45,7 @@ namespace Swashbuckle.Application
         {
             if (request.Method != "GET") return false;
 
-            var routeValues = _requestMatcher.Match(request.Path);
-            return (routeValues != null);
+			return _requestMatcher.TryMatch(request.Path, new RouteValueDictionary());
         }
 
         private Stream AssignPlaceholderValuesTo(Stream template)

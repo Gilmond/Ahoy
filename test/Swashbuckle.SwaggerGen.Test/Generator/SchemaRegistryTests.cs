@@ -6,8 +6,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using Xunit;
+using Swashbuckle.Swagger.Model;
 using Swashbuckle.SwaggerGen.TestFixtures;
-using Swashbuckle.SwaggerGen.TestFixtures.Extensions;
 
 namespace Swashbuckle.SwaggerGen.Generator
 {

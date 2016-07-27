@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.Routing.Template;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Template;
 
-namespace Swashbuckle.Application
+namespace Swashbuckle.SwaggerUi.Application
 {
     public class RedirectMiddleware
     {
@@ -37,8 +36,7 @@ namespace Swashbuckle.Application
         {
             if (request.Method != "GET") return false;
 
-            var routeValues = _requestMatcher.Match(request.Path);
-            return (routeValues != null);
+			return _requestMatcher.TryMatch(request.Path, new RouteValueDictionary());
         }
 
         private void RespondWithRedirect(HttpResponse response, string pathBase)

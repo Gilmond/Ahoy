@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Basic.Controllers
 {
@@ -9,8 +9,18 @@ namespace Basic.Controllers
     public class CrudActionsController
     {
         /// <summary>
-        /// Creates a product
+        /// Creates a <paramref name="product"/>
         /// </summary>
+        /// <remarks>
+        /// ## Heading 1
+        /// 
+        ///     POST /products
+        ///     {
+        ///         "id": "123",
+        ///         "description": "Some product"
+        ///     }
+        /// 
+        /// </remarks>
         /// <param name="product"></param>
         /// <returns></returns>
         [HttpPost]
@@ -20,11 +30,11 @@ namespace Basic.Controllers
         }
 
         /// <summary>
-        /// Returns the collection of all products
+        /// Searches the collection of products by description key words
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IEnumerable<Product> GetAll()
+        public IEnumerable<Product> Search([FromQuery]string keywords = null)
         {
             return new[]
             {
@@ -74,6 +84,14 @@ namespace Basic.Controllers
         }
     }
 
+    public enum ProductStatus
+    {
+        All = 0,
+        [Display(Name = "Out Of Stock")]
+        OutOfStock = 1,
+        InStock = 2
+    }
+
     /// <summary>
     /// Represents a product
     /// </summary>
@@ -88,5 +106,7 @@ namespace Basic.Controllers
         /// Describes the product
         /// </summary>
         public string Description { get; set; }
+
+        public ProductStatus Status { get; set; }
     }
 }

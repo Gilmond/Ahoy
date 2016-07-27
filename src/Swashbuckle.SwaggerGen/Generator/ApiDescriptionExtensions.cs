@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
-using Microsoft.AspNet.Mvc.ApiExplorer;
-using Microsoft.AspNet.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using System.Reflection;
 
 namespace Swashbuckle.SwaggerGen.Generator
 {
     public static class ApiDescriptionExtensions
     {
-        public static string FriendlyId(this ApiDescription apiDescription)
+        internal static string FriendlyId(this ApiDescription apiDescription)
         {
             var parts = (apiDescription.RelativePathSansQueryString() + "/" + apiDescription.HttpMethod.ToLower())
                 .Split('/');
@@ -29,21 +29,18 @@ namespace Swashbuckle.SwaggerGen.Generator
             return builder.ToString();
         }
 
-        public static IEnumerable<string> Produces(this ApiDescription apiDescription)
+        internal static IEnumerable<string> SupportedRequestMediaTypes(this ApiDescription apiDescription)
         {
-            return apiDescription.SupportedResponseFormats
-                .Select(format => format.MediaType.MediaType)
+            return apiDescription.SupportedRequestFormats
+                .Select(requestFormat => requestFormat.MediaType);
+        }
+
+        internal static IEnumerable<string> SupportedResponseMediaTypes(this ApiDescription apiDescription)
+        {
+            return apiDescription.SupportedResponseTypes
+                .SelectMany(responseType => responseType.ApiResponseFormats)
+                .Select(responseFormat => responseFormat.MediaType)
                 .Distinct();
-        }
-
-        public static string RelativePathSansQueryString(this ApiDescription apiDescription)
-        {
-            return apiDescription.RelativePath.Split('?').First();
-        }
-
-        public static bool IsObsolete(this ApiDescription apiDescription)
-        {
-            return apiDescription.GetActionAttributes().OfType<ObsoleteAttribute>().Any();
         }
 
         public static IEnumerable<object> GetControllerAttributes(this ApiDescription apiDescription)
@@ -60,6 +57,18 @@ namespace Swashbuckle.SwaggerGen.Generator
             return (actionDescriptor != null)
                 ? actionDescriptor.MethodInfo.GetCustomAttributes(false)
                 : Enumerable.Empty<object>();
+        }
+
+
+
+        internal static string RelativePathSansQueryString(this ApiDescription apiDescription)
+        {
+            return apiDescription.RelativePath.Split('?').First();
+        }
+
+        internal static bool IsObsolete(this ApiDescription apiDescription)
+        {
+            return apiDescription.GetActionAttributes().OfType<ObsoleteAttribute>().Any();
         }
     }
 }

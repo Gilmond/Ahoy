@@ -1,6 +1,7 @@
-﻿using Swashbuckle.SwaggerGen.Generator;
+﻿using Swashbuckle.Swagger.Model;
+using Swashbuckle.SwaggerGen.Generator;
 
-namespace Swashbuckle.SwaggerGen.TestFixtures.Extensions
+namespace Swashbuckle.SwaggerGen.TestFixtures
 {
     public class VendorExtensionsOperationFilter : IOperationFilter
     {

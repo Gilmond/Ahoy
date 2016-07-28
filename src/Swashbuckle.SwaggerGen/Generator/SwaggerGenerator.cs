@@ -86,17 +86,16 @@ namespace Swashbuckle.SwaggerGen.Generator
             {
                 var httpMethod = group.Key;
 
-                if (httpMethod == null)
+                if (string.IsNullOrWhiteSpace(httpMethod))
                     throw new NotSupportedException(string.Format(
                         "Unbounded HTTP verbs for path '{0}'. Are you missing an HttpMethodAttribute?",
                         group.First().RelativePathSansQueryString()));
 
-                if (group.Count() > 1)
-                    throw new NotSupportedException(string.Format(
-                        "Multiple operations with path '{0}' and method '{1}'. Are you overloading action methods?",
-                        group.First().RelativePathSansQueryString(), httpMethod));
-
-                var apiDescription = group.Single();
+				ApiDescription apiDescription;
+				if (group.Count() > 1)
+					apiDescription = _options.ResolveConflict(group.Select(x => x), httpMethod);
+				else
+					apiDescription = group.Single();
 
                 switch (httpMethod)
                 {

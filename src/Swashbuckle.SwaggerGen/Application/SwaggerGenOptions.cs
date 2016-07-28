@@ -138,7 +138,10 @@ namespace Swashbuckle.SwaggerGen.Application
             ModelFilter<XmlCommentsModelFilter>(xmlDoc);
         }
 
-        internal SchemaRegistryOptions GetSchemaRegistryOptions(IServiceProvider serviceProvider)
+		public void ResolveConflictsBy(Func<IEnumerable<ApiDescription>, string, ApiDescription> resolver)
+			=> _swaggerGeneratorOptions.ResolveConflictsBy(resolver);
+
+		internal SchemaRegistryOptions GetSchemaRegistryOptions(IServiceProvider serviceProvider)
         {
             var options = _schemaRegistryOptions.Clone();
 

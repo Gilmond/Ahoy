@@ -16,6 +16,7 @@ namespace Swashbuckle.SwaggerGen.Generator
 			SecurityDefinitions = new Dictionary<string, SecurityScheme>();
 			OperationFilters = new List<IOperationFilter>();
 			DocumentFilters = new List<IDocumentFilter>();
+			ResolveConflict = ThrowExceptionOnApiDescriptionConflict;
 		}
 
 		public IList<Info> ApiVersions { get; private set; }
@@ -34,7 +35,7 @@ namespace Swashbuckle.SwaggerGen.Generator
 
 		public IList<IDocumentFilter> DocumentFilters { get; private set; }
 
-		internal Func<IEnumerable<ApiDescription>, string, ApiDescription> ResolveConflict { get; private set; } = ThrowExceptionOnApiDescriptionConflict;
+		internal Func<IEnumerable<ApiDescription>, string, ApiDescription> ResolveConflict { get; private set; }
 
 		private static ApiDescription ThrowExceptionOnApiDescriptionConflict(IEnumerable<ApiDescription> apiDescriptions, string httpMethod)
 		{
@@ -76,7 +77,8 @@ namespace Swashbuckle.SwaggerGen.Generator
 				GroupNameComparer = GroupNameComparer,
 				SecurityDefinitions = SecurityDefinitions,
 				OperationFilters = OperationFilters,
-				DocumentFilters = DocumentFilters
+				DocumentFilters = DocumentFilters,
+				ResolveConflict = ResolveConflict
 			};
 		}
 	}
